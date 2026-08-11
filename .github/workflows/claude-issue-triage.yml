@@ -1,0 +1,100 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+concurrency:
+  group: issue-triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    # skip bot-authored issues (avoid loops with automation)
+    if: github.event.issue.user.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Issue Triage
+        id: claude-triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh issue comment:*),Bash(gh api:*),Bash(gh label list:*),Read,Grep,Glob"'
+          prompt: |
+            You are triaging GitHub issue #${{ github.event.issue.number }} in this repo.
+            Env: GH_TOKEN is available to the `gh` CLI. The repo is a vanilla JS Tetris
+            game; see CLAUDE.md for its architecture (board model, PIECES, collide,
+            tryRotate, loop, clearLines, LINE_SCORES, ghostY, draw/drawNext, and the
+            tunable constants at the top of game.js).
+
+            Do the following, in order:
+
+            1. Fetch the issue:
+               gh issue view ${{ github.event.issue.number }} --json title,body,labels,comments
+
+            2. Idempotency check: look through the issue's comments for one whose body
+               starts with the marker `<!-- claude-triage -->`. Remember its comment id
+               if found (you'll need it from the `comments` field, or via
+               `gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments`).
+
+            3. Label the issue with exactly ONE primary label from this fixed list only:
+               bug, enhancement, documentation, question, duplicate, invalid, wontfix.
+               You may additionally add "good first issue" if the fix looks small and
+               localized. Do NOT create new labels and do NOT use --create-label — only
+               use labels that already exist in the repo (run `gh label list` if unsure).
+               Apply with: gh issue edit ${{ github.event.issue.number }} --add-label "<label>"
+               If a correct label is already present, leave it as is; don't add duplicates
+               or remove existing unrelated labels.
+
+            4. Diagnose the issue by reading the relevant source with Read/Grep
+               (game.js, index.html, style.css, CLAUDE.md). Ground your diagnosis in the
+               actual functions/constants involved (e.g. game.js:NN referencing collide,
+               tryRotate, clearLines, etc.) rather than speculating in the abstract. If
+               the issue is a vague, non-actionable report (e.g. "game is broken"), do not
+               fabricate a root cause — say so plainly and list what's needed under "Open
+               questions" instead.
+
+            5. Post or update a single diagnostic comment shaped exactly like this
+               (keep it under ~400 words total):
+
+               <!-- claude-triage -->
+               ## 🔍 Triage
+
+               **Label:** `<label>` · **Confidence:** <low|medium|high>
+
+               **Summary** — one or two sentences restating the issue in technical terms.
+
+               **Likely area** — files and functions involved, as `game.js:NN` refs.
+
+               **Root cause hypothesis** — what in the current implementation produces
+               this, or for a feature request, what currently prevents it.
+
+               **Suggested approach** — 2-5 concrete numbered steps.
+
+               **Watch out for** — interactions with adjacent logic (e.g. wall kicks,
+               ghost projection, scoring/level coupling, canvas size vs. COLS/ROWS/BLOCK
+               in index.html).
+
+               **Open questions** — anything the reporter must clarify; write "None." if
+               there are none.
+
+               <sub>Automated triage — a starting point, not a verdict.</sub>
+
+               - If step 2 found an existing triage comment, UPDATE it in place via:
+                 gh api --method PATCH repos/${{ github.repository }}/issues/comments/<id> -f body='<new body>'
+               - Otherwise, post a new comment via:
+                 gh issue comment ${{ github.event.issue.number }} --body '<body>'
+               - Never post more than one triage comment on the same issue.
+
+            Constraints: do not edit any repository file, do not open pull requests, do
+            not close or reopen the issue, do not remove labels other than what step 3
+            allows you to manage.
