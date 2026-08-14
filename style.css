@@ -186,6 +186,10 @@ kbd {
   display: none;
 }
 
+.overlay-box.hidden {
+  display: none;
+}
+
 .overlay-box {
   text-align: center;
   display: flex;
@@ -207,7 +211,7 @@ kbd {
   color: var(--overlay-score-color);
 }
 
-#restart-btn {
+.overlay-btn {
   margin-top: 8px;
   background: var(--btn-bg);
   color: var(--btn-color);
@@ -221,6 +225,87 @@ kbd {
   transition: background 0.15s;
 }
 
-#restart-btn:hover {
+.overlay-btn:hover {
   background: var(--btn-hover-bg);
+}
+
+/* ---- Menú de pausa ---- */
+#pause-menu-box {
+  width: 220px;
+}
+
+.overlay-heading {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--overlay-title-color);
+}
+
+.pause-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+}
+
+.pause-screen.hidden {
+  display: none;
+}
+
+.pause-screen ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.pause-screen ul li {
+  font-size: 13px;
+  color: var(--controls-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.level-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.level-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-stepper button {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  color: var(--text);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.level-stepper button:hover {
+  background: var(--btn-hover-bg);
+  color: var(--btn-color);
+}
+
+#level-value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--value-color);
+  min-width: 24px;
+  text-align: center;
 }
