@@ -79,10 +79,16 @@ body {
   text-shadow: 0 0 20px var(--title-shadow);
 }
 
-.theme-toggle {
+.top-controls {
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle {
   background: var(--kbd-bg);
   border: 1px solid var(--kbd-border);
   color: var(--text);
@@ -90,6 +96,17 @@ body {
   padding: 6px 10px;
   font-size: 16px;
   line-height: 1;
+  cursor: pointer;
+}
+
+.skin-select {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
   cursor: pointer;
 }
 
@@ -142,6 +159,12 @@ body {
   border: 1px solid var(--board-border);
   background: var(--board-bg);
   border-radius: 4px;
+}
+
+/* ---- Skin: Neon (forces a black board regardless of light/dark theme) ---- */
+[data-skin="neon"] #board,
+[data-skin="neon"] #next-canvas {
+  background: #000;
 }
 
 /* ---- Controles ---- */
