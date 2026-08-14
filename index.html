@@ -48,6 +48,16 @@
             <li><kbd>P</kbd> pausa</li>
           </ul>
         </div>
+
+        <div class="panel-section highscores-section">
+          <span class="label">TOP 5</span>
+          <ol id="highscores-list" class="highscores-list"></ol>
+          <div class="alltime-bests">
+            <span>Mejor combo: <strong id="best-combo-ever">0</strong></span>
+            <span>Máx. líneas (1 partida): <strong id="max-lines-ever">0</strong></span>
+          </div>
+          <button id="reset-scores-btn" class="reset-btn">Resetear records</button>
+        </div>
       </aside>
     </div>
 
@@ -55,6 +65,12 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <p id="overlay-stats"></p>
+        <div id="save-score-section" class="hidden">
+          <input type="text" id="player-name-input" maxlength="12" placeholder="Tu nombre" />
+          <button id="save-score-btn">Guardar</button>
+        </div>
+        <ol id="overlay-highscores-list" class="highscores-list"></ol>
         <button id="restart-btn">Reiniciar</button>
       </div>
     </div>

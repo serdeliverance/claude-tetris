@@ -224,3 +224,129 @@ kbd {
 #restart-btn:hover {
   background: var(--btn-hover-bg);
 }
+
+/* ---- Highscores ---- */
+.highscores-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+#overlay-highscores-list {
+  width: 200px;
+}
+
+.highscore-entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: var(--text);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.highscore-name {
+  color: var(--controls-color);
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highscore-value {
+  color: var(--value-color);
+  font-weight: 700;
+}
+
+.highscore-empty {
+  font-size: 12px;
+  color: var(--controls-color);
+  font-style: italic;
+}
+
+.highscore-highlight {
+  background: var(--kbd-bg);
+  border-color: var(--btn-bg);
+}
+
+.alltime-bests {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--controls-color);
+  margin-top: 4px;
+}
+
+.alltime-bests strong {
+  color: var(--value-color);
+}
+
+.reset-btn {
+  margin-top: 6px;
+  background: transparent;
+  color: var(--controls-color);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.reset-btn:hover {
+  background: var(--kbd-bg);
+  color: var(--text);
+}
+
+#overlay-stats {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: var(--controls-color);
+}
+
+#overlay-stats:empty {
+  display: none;
+}
+
+#save-score-section {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+#save-score-section.hidden {
+  display: none;
+}
+
+#player-name-input {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  width: 110px;
+}
+
+#save-score-btn {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#save-score-btn:hover {
+  background: var(--btn-hover-bg);
+}
