@@ -40,11 +40,38 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeToggleBtn = document.getElementById('theme-toggle');
+const gameoverBox = document.getElementById('gameover-box');
+const pauseMenuBox = document.getElementById('pause-menu-box');
+const pauseMain = document.getElementById('pause-main');
+const pauseControls = document.getElementById('pause-controls');
+const resumeBtn = document.getElementById('resume-btn');
+const pauseRestartBtn = document.getElementById('pause-restart-btn');
+const controlsBtn = document.getElementById('controls-btn');
+const controlsBackBtn = document.getElementById('controls-back-btn');
+const levelDownBtn = document.getElementById('level-down-btn');
+const levelUpBtn = document.getElementById('level-up-btn');
+const levelValueEl = document.getElementById('level-value');
 
 const THEME_KEY = 'tetris-theme';
+const START_LEVEL_KEY = 'tetris-start-level';
+const MIN_START_LEVEL = 1;
+const MAX_START_LEVEL = 20;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let gridColor, blockHighlightColor;
+
+function getStartLevel() {
+  const stored = parseInt(localStorage.getItem(START_LEVEL_KEY), 10);
+  if (Number.isNaN(stored)) return MIN_START_LEVEL;
+  return Math.min(MAX_START_LEVEL, Math.max(MIN_START_LEVEL, stored));
+}
+
+function setStartLevel(value) {
+  const clamped = Math.min(MAX_START_LEVEL, Math.max(MIN_START_LEVEL, value));
+  localStorage.setItem(START_LEVEL_KEY, clamped);
+  levelValueEl.textContent = clamped;
+  return clamped;
+}
 
 function cacheThemeColors() {
   const styles = getComputedStyle(document.documentElement);
@@ -247,22 +274,40 @@ function drawNext() {
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
+  pauseMenuBox.classList.add('hidden');
+  gameoverBox.classList.remove('hidden');
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
   overlay.classList.remove('hidden');
+}
+
+function showPauseScreen(screen) {
+  pauseMain.classList.toggle('hidden', screen !== 'main');
+  pauseControls.classList.toggle('hidden', screen !== 'controls');
+}
+
+function openPauseMenu() {
+  gameoverBox.classList.add('hidden');
+  pauseMenuBox.classList.remove('hidden');
+  showPauseScreen('main');
+  overlay.classList.remove('hidden');
+}
+
+function closePauseMenu() {
+  overlay.classList.add('hidden');
+  pauseMenuBox.classList.add('hidden');
 }
 
 function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    closePauseMenu();
     lastTime = performance.now();
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    openPauseMenu();
   }
 }
 
@@ -286,11 +331,11 @@ function loop(ts) {
 function init() {
   board = createBoard();
   score = 0;
-  lines = 0;
-  level = 1;
+  level = getStartLevel();
+  lines = (level - 1) * 10;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = Math.max(100, 1000 - (level - 1) * 90);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
@@ -302,7 +347,7 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
@@ -329,6 +374,16 @@ document.addEventListener('keydown', e => {
 restartBtn.addEventListener('click', init);
 themeToggleBtn.addEventListener('click', toggleTheme);
 
+resumeBtn.addEventListener('click', () => {
+  if (paused) togglePause();
+});
+pauseRestartBtn.addEventListener('click', init);
+controlsBtn.addEventListener('click', () => showPauseScreen('controls'));
+controlsBackBtn.addEventListener('click', () => showPauseScreen('main'));
+levelDownBtn.addEventListener('click', () => setStartLevel(getStartLevel() - 1));
+levelUpBtn.addEventListener('click', () => setStartLevel(getStartLevel() + 1));
+
 cacheThemeColors();
 themeToggleBtn.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙';
+levelValueEl.textContent = getStartLevel();
 init();
