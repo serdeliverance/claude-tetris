@@ -9,12 +9,22 @@
     (function () {
       var theme = localStorage.getItem('tetris-theme') || 'dark';
       document.documentElement.setAttribute('data-theme', theme);
+      var skin = localStorage.getItem('tetris-skin') || 'retro';
+      document.documentElement.setAttribute('data-skin', skin);
     })();
   </script>
 </head>
 <body>
   <div class="wrapper">
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark theme">🌙</button>
+    <div class="top-controls">
+      <select id="skin-select" class="skin-select" aria-label="Seleccionar skin visual">
+        <option value="retro">Retro</option>
+        <option value="neon">Neón</option>
+        <option value="pastel">Pastel</option>
+        <option value="pixel">Pixel Art</option>
+      </select>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark theme">🌙</button>
+    </div>
     <h1 class="game-title">TETRIS</h1>
     <div class="game-container">
       <canvas id="board" width="300" height="600"></canvas>
